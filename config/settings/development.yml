@@ -26,6 +26,8 @@ ovr_states:
   PA: 
     api_settings:
       api_url: "https://fake-pa-endpoint.herokuapp.com"
+    require_id: true
+    
   
   WA:
     redirect_to_online_url: true

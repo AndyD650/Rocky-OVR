@@ -25,6 +25,17 @@
 class Step2Controller < RegistrationStep
   CURRENT_STEP = 2
 
+  def show
+    super
+    render_current_step
+  end
+  
+  def render_current_step
+    if @registrant.custom_step_2
+      render @registrant.home_state_abbrev
+    end
+  end
+  
   def update  
     # get rid of home_state_name
     if params[:registrant]
@@ -41,7 +52,7 @@ class Step2Controller < RegistrationStep
       reg[:change_of_name] = !"#{reg[:prev_first_name]}#{reg[:prev_middle_name]}#{reg[:prev_last_name]}".blank?
       
     end
-    super
+    super    
   end
 
   protected

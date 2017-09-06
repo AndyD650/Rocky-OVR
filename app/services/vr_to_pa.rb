@@ -226,7 +226,6 @@ class VRToPA
   # }
   # }
 
-
   def initialize(voter_records_req)
     @voter_records_request = voter_records_req
     @request = @voter_records_request['voter_registration']

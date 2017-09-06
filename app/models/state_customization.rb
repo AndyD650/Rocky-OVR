@@ -91,6 +91,10 @@ class StateCustomization
     return ovr_settings["require_id"]!=false
   end
   
+  def custom_step_2?
+    false
+  end
+  
 protected
   def self.class_exists?(class_name)
     klass = Module.const_get(class_name)

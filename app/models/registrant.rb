@@ -908,6 +908,9 @@ class Registrant < ActiveRecord::Base
   end
   
   
+  def custom_step_2
+    home_state.custom_step_2?
+  end
 
   def custom_step_4_partial
     is_fake? ? "fake_state_online_page" : "#{home_state.abbreviation.downcase}"
