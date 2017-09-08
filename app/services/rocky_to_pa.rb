@@ -375,7 +375,7 @@ class RockyToPA
       [v, k].flatten.each do |word|
         w = word.to_s.downcase
         if unit.downcase.include?(w)
-          return[k, unit.downcase.gsub(word, '').strip]
+          return[k.to_s, unit.downcase.gsub(/#{word}/i, '').strip]
         end
       end
     end
