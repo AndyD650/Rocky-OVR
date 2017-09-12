@@ -1,3 +1,6 @@
+<%- home_extras ||= nil %>
+<%- mailing_extras ||= nil %>
+
 <% content_for :head do %>
 <script>
 $(document).ready(function() {
@@ -38,6 +41,7 @@ $(document).ready(function() {
       <span class="error"><%= form.object.errors[:home_zip_code].join("\n") %></span>
     </li>
   </ul>
+  <%= home_extras %>
 </fieldset>
 
 <fieldset class='no_border'>
@@ -80,6 +84,7 @@ $(document).ready(function() {
       <span class="error"><%= form.object.errors[:mailing_zip_code].join("\n") %></span>
     </li>
   </ul>
+  <%= mailing_extras %>  
 </fieldset>
 <%- show_hr = show_hr.nil? ? true : show_hr %>
 <%- if show_hr %>

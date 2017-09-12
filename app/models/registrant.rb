@@ -836,6 +836,7 @@ class Registrant < ActiveRecord::Base
     end
   end
 
+
   def home_state_name
     home_state && home_state.name
   end
@@ -845,6 +846,14 @@ class Registrant < ActiveRecord::Base
   
   def home_state_online_reg_url
     home_state && home_state.online_reg_url(self)
+  end
+  
+  def has_home_state_direct_ovr?
+    home_state && home_state.can_submit_to_online_reg_url(self)
+  end
+  
+  def submit_to_home_state_ovr
+    home_state && home_state.submit_to_online_reg_url(self)
   end
   
   def has_home_state_online_redirect?

@@ -1,0 +1,13 @@
+- type ||= 'home'
+- required = type == 'home'
+%ul.stacked
+  %li.width_a.registrant-form__mailing-county__line
+    %h3
+      = form.label "#{type}_county"
+      -if required
+        %span.required *
+    %div
+      = select_div form, "#{type}_county", options_for_select(RockyToPA::COUNTIES.collect(&:titleize), form.object.send("#{type}_county")), include_blank: true
+      %span.error= form.object.errors["#{type}_county"].join("\n")
+
+  

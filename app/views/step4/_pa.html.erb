@@ -1,1 +1,45 @@
-<%= render :partial=>"common_state_online_page", :locals=>{:form=>form} %>
+<% content_for :head do %>
+<script>
+
+$(document).ready(function() {
+  var show_fields = <%= [params[:show_fields], @show_fields].include?("1") ? 'true' : 'false' %>;
+  $('.skip_state_registration_link').show();
+  if(!show_fields) {
+    $('.skip_state_registration').hide();    
+  }
+  $('.skip_state_registration_link').click(function() {
+    $('.skip_state_registration').show();
+  });
+  
+});
+</script>
+<% end %>
+
+<h1><%= I18n.t('txt.registration.instructions.state_online_registration', :state=>@registrant.home_state_abbrev).html_safe %></h1>
+<br/>
+<h3 class="ovr_step_4"><%= I18n.t('txt.registration.instructions.state_online_registration_sub_header').html_safe %></h3>
+
+
+
+
+
+  <%= rollover_button(:state_online_registration, I18n.t('txt.button.state_online_registration', :state=>@registrant.home_state_abbrev).html_safe, {:id=>'registrant_state_online_registration',:name=>'registrant_state_online_registration',:value=>'registrant_state_online_registration'}) %>  
+  
+<div style="text-align:center;">
+<a href="#" class='skip_state_registration_link' style="display:none;">
+  <%= I18n.t('txt.button.skip_state_online_registration', :rtv_and_partner_name=>@registrant.rtv_and_partner_name).html_safe %>
+</a>
+</div>
+<br/><br/>
+<br/><br/>
+<div class="skip_state_registration">
+  <% if false %>
+    <h2><%= t('txt.registration.step_3_header') %></h2>
+    <%= render partial: 'skip_state', locals: { form: form, include_step_2: false } %>
+  <% end %>
+  <%- if @registrant.use_short_form? %>
+    <%= rollover_button(:skip_state_online_registration, I18n.t('txt.button.prepare').html_safe , {:id=>'registrant_skip_state_online_registration',:name=>'registrant_skip_state_online_registration',:value=>'registrant_skip_state_online_registration'}) %>        
+  <%- else %>
+    <%= rollover_button(:skip_state_online_registration, I18n.t('txt.button.review').html_safe , {:id=>'registrant_skip_state_online_registration',:name=>'registrant_skip_state_online_registration',:value=>'registrant_skip_state_online_registration'}) %>  
+  <%- end %>
+</div>

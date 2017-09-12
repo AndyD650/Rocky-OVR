@@ -92,7 +92,7 @@ class RockyToPA
     result['isnewregistration'] = is_new_registration
     result['name-update'] = name_update
     result['address-update'] = address_update
-    result['ispartychange'] = ""
+    result['ispartychange'] = bool_to_int(@registrant.change_of_party.to_s == "1")
     result['isfederalvoter'] = ""
 
     # YYYY-MM-DD is expected
@@ -113,12 +113,12 @@ class RockyToPA
 
     result['zipcode'] = zip_code(:home_zip_code)
     result['donthavePermtOrResAddress'] = ''
-    result['county'] = "TODO" #TODO get lsit - ID or name?
+    result['county'] = county
 
     if @registrant.has_mailing_address?
       result['mailingaddress'] = @registrant.mailing_address
       result['mailingcity'] = @registrant.mailing_city
-      result['mailingstate'] = @registrant.mailing_state_abbrev #TODO format?
+      result['mailingstate'] = @registrant.mailing_state_abbrev
       result['mailingzipcode'] = zip_code(@registrant.mailing_zip_code)
     else
       result['mailingaddress'] = ''
@@ -188,9 +188,14 @@ class RockyToPA
     raise ParsingError.new(e.message)
   end
 
+  COUNTIES =%w(ADAMS ALLEGHENY ARMSTRONG BEAVER BEDFORD BERKS BLAIR BRADFORD BUCKS BUTLER CAMBRIA CAMERON CARBON CENTRE CHESTER CLARION CLEARFIELD CLINTON COLUMBIA CRAWFORD CUMBERLAND DAUPHIN DELAWARE ELK ERIE FAYETTE FOREST FRANKLIN FULTON GREENE HUNTINGDON INDIANA JEFFERSON JUNIATA LACKAWANNA LANCASTER LAWRENCE LEBANON LEHIGH LUZERNE LYCOMING MCKEAN MERCER MIFFLIN MONROE MONTGOMERY MONTOUR NORTHAMPTON NORTHUMBERLAND PERRY PHILADELPHIA PIKE POTTER SCHUYLKILL SNYDER SOMERSET SULLIVAN SUSQUEHANNA TIOGA UNION VENANGO WARREN WASHINGTON WAYNE WESTMORELAND WYOMING YORK)
+
+  def county
+    @registrant.home_county
+  end
+
   def prev_reg_county
-    # TODO
-    is_new_registration_boolean ? nil : ""
+    is_new_registration_boolean ? nil : @registrant.prev_county
   end
 
   def prev_reg_zip
@@ -255,6 +260,7 @@ class RockyToPA
   end
 
   def drivers_license
+    return '' if @registrant.state_id_number.to_s.length <= 4
     dl = @registrant.state_id_number.to_s.strip
     valid = dl == "" || dl =~ /^\d{8}$/
     raise ParsingError.new("Invalid drivers licence value \"%s\": 8 digits are expected" % dl) unless valid
@@ -408,7 +414,7 @@ class RockyToPA
   end
 
   def ssn4
-    v = "" # TODO
+    v = @registrant.state_id_number.to_s.length <= 4 ? @registrant.state_id_number : ""
     if v.blank?
       ""
     else

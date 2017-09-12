@@ -36,6 +36,9 @@ class StateCustomization
     @state = state
   end
   
+  def custom_validations(registrant)
+  end
+  
   def automatic_under_18_ok?(registrant)
     return false
   end
@@ -64,6 +67,14 @@ class StateCustomization
   def redirect_to_online_reg_url(registrant)
     return false if ovr_settings.blank?
     return !!ovr_settings.redirect_to_online_reg_url
+  end
+  
+  def can_submit_to_online_reg_url(registrant)
+    return false
+  end
+  
+  def submit_to_online_reg_url
+    raise "Not Implemented"
   end
   
   def ovr_settings

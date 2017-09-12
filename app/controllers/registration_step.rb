@@ -124,6 +124,10 @@ class RegistrationStep < ApplicationController
     if @registrant.finish_with_state? && special_case != :tell_friend && special_case != :finish
       @registrant.update_attributes(:finish_with_state=>false)
     end
+    if @registrant.has_ovr_pre_check?
+      @registrant.decorate_for_state(self)
+    end
+    
   end
 
   def find_partner

@@ -30,8 +30,12 @@ class StateOnlineRegistrationsController < RegistrationStep
       render :text => "<html><body><script>parent.location.href='#{@online_registration_iframe_url}';</script></body></html>"
       #redirect_to @online_registration_iframe_url
     elsif @registrant.has_home_state_online_registration_view?
-      render :action=> @registrant.home_state_online_registration_view
-      
+      render :action=> @registrant.home_state_online_registration_view      
+    elsif @registrant.has_home_state_direct_ovr?
+      @registrant.submit_to_home_state_ovr
+      @registrant.advance_to_step_5
+      @registrant.wrap_up   
+      redirect_to registrant_finish_url(@registrant)   
     else
       render :action => :show
     end

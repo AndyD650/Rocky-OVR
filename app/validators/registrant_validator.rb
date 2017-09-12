@@ -125,9 +125,6 @@ class RegistrantValidator < ActiveModel::Validator
     if reg.building_via_api_call? && reg.finish_with_state?
       reg.validates_inclusion_of  :send_confirmation_reminder_emails, :in => [ true, false ]
     end
-  
-  
-  
     
   end
   

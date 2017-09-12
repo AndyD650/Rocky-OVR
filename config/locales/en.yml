@@ -54,6 +54,7 @@ en:
         home_address: Address
         home_unit: ! 'Unit/Lot #'
         home_city: City
+        home_county: County
         home_state_name: State
         home_state_abbrev: State
         has_mailing_address: I get my mail at a different address from the one above.
@@ -65,6 +66,7 @@ en:
         mailing_state_abbrev: State
         mailing_zip_code: Zip
         party: Party
+        change_of_party: Change Of Party?
         race: Race
         state_id_number: ID Number
         phone: Phone
@@ -117,6 +119,7 @@ en:
               inclusion: Please indicate whether you have a valid state license.
             us_citizen:
               accepted: You must be a US citizen!
+              
       messages:
         inclusion: ! '%{attribute} is not included in the list.'
         exclusion: ! '%{attribute} is reserved.'

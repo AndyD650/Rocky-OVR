@@ -33,6 +33,8 @@ class Step2Controller < RegistrationStep
   def render_current_step
     if @registrant.custom_step_2
       render @registrant.home_state_abbrev
+    else
+      super
     end
   end
   

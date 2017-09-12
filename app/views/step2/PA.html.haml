@@ -34,11 +34,12 @@
 
     = render partial: 'previous_name', locals: { form: form }
     
-  = render :partial=> "registrants/home_address", :locals=>{:form=>form}
+  = render :partial=> "registrants/home_address", :locals=>{:form=>form, home_extras: render(partial: "registrants/pa/home_county", locals: {form: form})}
+  
   
   - if @registrant.use_short_form?
     
-    = render partial: 'previous_address', locals: { form: form }
+    = render partial: 'previous_address', locals: { form: form, extras: render(partial: "registrants/pa/prev_county", locals: {form: form}) }
     
     - if @registrant.home_state_allows_ovr_ignoring_license?
       - content_for :head do
@@ -91,7 +92,7 @@
               = form.label :has_state_license_0, I18n.t('txt.registration.has_no_state_license', state: @registrant.home_state_abbrev)
 
       .skip_state_registration
-        = render partial: 'step4/skip_state', locals: { form: form }
+        = render partial: 'step4/skip_state', locals: { form: form, race_and_party_extras: { :party_extras=>render(partial: "registrants/pa/party", locals: {form: form}), :race_extras=>render(partial: "registrants/pa/race", locals: {form: form}) } }
 
       %ul.flat.dob-and-phone
         = render :partial=> "registrants/date_of_birth", :locals=>{:form=>form}
@@ -100,7 +101,7 @@
     - else
       .state-id-number
         = render :partial=> "registrants/state_id_number", :locals=>{:form=>form, :include_race_and_party=>false, :include_date_of_birth=>false}
-      = render :partial=> "registrants/race_and_party", :locals=>{:form=>form}
+      = render :partial=> "registrants/race_and_party", :locals=>{:form=>form, :party_extras=>render(partial: "registrants/pa/party", locals: {form: form}), :race_extras=>render(partial: "registrants/pa/race", locals: {form: form}) }
       .clear-fix
       %ul.flat.dob-and-phone
         = render :partial=> "registrants/date_of_birth", :locals=>{:form=>form}      
