@@ -73,7 +73,7 @@ class StateCustomization
     return false
   end
   
-  def submit_to_online_reg_url
+  def async_submit_to_online_reg_url
     raise "Not Implemented"
   end
   

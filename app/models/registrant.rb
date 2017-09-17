@@ -852,8 +852,8 @@ class Registrant < ActiveRecord::Base
     home_state && home_state.can_submit_to_online_reg_url(self)
   end
   
-  def submit_to_home_state_ovr
-    home_state && home_state.submit_to_online_reg_url(self)
+  def async_submit_to_home_state_ovr
+    home_state && home_state.async_submit_to_online_reg_url(self)
   end
   
   def has_home_state_online_redirect?

@@ -34,90 +34,102 @@
 
     = render partial: 'previous_name', locals: { form: form }
     
-  = render :partial=> "registrants/home_address", :locals=>{:form=>form, home_extras: render(partial: "registrants/pa/home_county", locals: {form: form})}
+  = render :partial=> "registrants/pa/home_address", :locals=>{:form=>form, home_extras: render(partial: "registrants/pa/home_county", locals: {form: form})}
   
   
   - if @registrant.use_short_form?
     
     = render partial: 'previous_address', locals: { form: form, extras: render(partial: "registrants/pa/prev_county", locals: {form: form}) }
     
-    - if @registrant.home_state_allows_ovr_ignoring_license?
-      - content_for :head do
-        :javascript
-          $(document).ready(function() {
-            $('.skip_state_registration').show();
-            $("#main").addClass('skipping_state_registration').removeClass('using_state_registration');  
-            
-            function hasStateLicenseSelected() {
-              var hasStateLicense = true;
-              var hasStateLicenseRadio = $('input[name="registrant[has_state_license]"]:checked'); //a radio must have 1 selected
-              if (hasStateLicenseRadio.length > 0 && hasStateLicenseRadio.val()!="1") {
-                hasStateLicense = false;
-              } 
-              
-              // If check-18 checkbox is present, that must also be selected
-              var willBe18 = true;
-              var willBe18Checkbox = $('input[name="registrant[will_be_18_by_election]"]');
-              if (willBe18Checkbox.length > 0 && !willBe18Checkbox.is(":checked")) {
-                willBe18 = false;
-              }
-              return hasStateLicense && willBe18;
-            }
-            function toggleHasStateLicense() {
-              if (hasStateLicenseSelected()) {
-                 $('.skip_state_registration--submit-button').hide();
-                 $('.use_state_registration').show();  
-              } else {
-                $('.skip_state_registration--submit-button').show();
-                $('.use_state_registration').hide();    
-              }
-            }
-            toggleHasStateLicense();
-            $('input[name="registrant[has_state_license]"]').click(toggleHasStateLicense);  
-            $('input[name="registrant[will_be_18_by_election]"]').click(toggleHasStateLicense);  
-          });
+    %fieldset.id-numbers
+      %ul.flat
+        %li.registrant-form__state-id-number__line
+          %h3
+            = form.label :state_id_number
+            %span.required *
+          .instructions
+            %p= I18n.t('states.custom.pa.dln_instructions')
+          = field_div form, :state_id_number, :size => 20
+          %span.error= form.object.errors[:state_id_number].join("\n")
+
+
+      %ul.checkbox
+        %li.spacer &nbsp;
+        %li.registrant-form__no-state-license__line
+          %h3
+            = form.check_box :does_not_have_state_id
+            = form.label :does_not_have_state_id, I18n.t('txt.registration.has_no_state_license', state: @registrant.home_state_abbrev)
+
+      .registrant-form__ssn4-group
+        %ul.flat
+          %li.registrant-form__ssn4__line
+            %h3
+              = form.label :ssn4
+              %span.required *
+            = field_div form, :ssn4, :size => 20
+            %span.error= form.object.errors[:ssn4].join("\n")
     
-      - if @registrant.require_id?
-        %ul.radio
-          %li.registrant-form__has-state-license__line.has_license
+        %ul.checkbox
+          %li.spacer &nbsp;
+          %li.registrant-form__no-ssn4__line
             %h3
-              = form.radio_button :has_state_license, 1, checked: @registrant.has_state_license?
-              = form.label :has_state_license_1, I18n.t('txt.registration.has_state_license', state: @registrant.home_state_abbrev)
-            .use_state_registration.checkbox-explanation
-              %p= I18n.t('txt.registration.has_state_license_eligible', state: @registrant.home_state_name)
-        %ul.radio
-          %li.registrant-form__has-no-state-license__line
-            %h3
-              = form.radio_button :has_state_license, 0, checked: !@registrant.has_state_license?
-              = form.label :has_state_license_0, I18n.t('txt.registration.has_no_state_license', state: @registrant.home_state_abbrev)
+              = form.check_box :does_not_have_ssn4
+              = form.label :does_not_have_ssn4, I18n.t('txt.registration.has_no_ssn')
+    
+    - content_for :head do
+      :javascript
+        $(document).ready(function() {
+          function hasStateLicense() {
+            return !$('input[name="registrant[does_not_have_state_id]"]:checked').length == 1;
+          }
 
-      .skip_state_registration
-        = render partial: 'step4/skip_state', locals: { form: form, race_and_party_extras: { :party_extras=>render(partial: "registrants/pa/party", locals: {form: form}), :race_extras=>render(partial: "registrants/pa/race", locals: {form: form}) } }
+          function hasSsn4() {
+            return !$('input[name="registrant[does_not_have_ssn4]"]:checked').length == 1;
+          }
+          function toggleDln() {
+            if (hasStateLicense()) {
+              $('.registrant-form__state-id-number__line').show();
+            } else {
+              $('.registrant-form__state-id-number__line').hide();              
+            }
+          }
+          
+          function toggleSsn4() {
+            if (hasStateLicense()) {
+               $('.registrant-form__ssn4-group').hide(); 
+            } else {
+              $('.registrant-form__ssn4-group').show();
+              if (hasSsn4()) {
+                $('.registrant-form__ssn4__line').show();
+              } else {
+                $('.registrant-form__ssn4__line').hide();                
+              }
+            }
+          }
+          toggleSsn4();
+          $('input[name="registrant[does_not_have_state_id]"]').click(function() {
+            toggleSsn4();
+            toggleDln();            
+          });
+          $('input[name="registrant[does_not_have_ssn4]"]').click(function() {
+            toggleSsn4();
+          });
+        });
 
-      %ul.flat.dob-and-phone
-        = render :partial=> "registrants/date_of_birth", :locals=>{:form=>form}
-        = render :partial=> "registrants/phone", :locals=>{:form=>form}
-      
-    - else
-      .state-id-number
-        = render :partial=> "registrants/state_id_number", :locals=>{:form=>form, :include_race_and_party=>false, :include_date_of_birth=>false}
-      = render :partial=> "registrants/race_and_party", :locals=>{:form=>form, :party_extras=>render(partial: "registrants/pa/party", locals: {form: form}), :race_extras=>render(partial: "registrants/pa/race", locals: {form: form}) }
-      .clear-fix
-      %ul.flat.dob-and-phone
-        = render :partial=> "registrants/date_of_birth", :locals=>{:form=>form}      
-        = render :partial=> "registrants/phone", :locals=>{:form=>form}
-
+    = render :partial=> "registrants/race_and_party", :locals=>{:form=>form, party_extras: render(partial: "registrants/pa/party", locals: {form: form}), race_extras: render(partial: "registrants/pa/race", locals: {form: form})}
+  
+    %ul.flat.dob-and-phone
+      = render :partial=> "registrants/date_of_birth", :locals=>{:form=>form}
+      = render :partial=> "registrants/phone", :locals=>{:form=>form}
+    
     %fieldset.no_border.opt-ins
       = render :partial=> 'registrants/phone_opt_ins', :locals=>{:form=>form, :show_hr=>true}
       = render :partial=> 'registrants/email_opt_ins', :locals=>{:form=>form}
     
       = render :partial=>'registrants/survey_and_volunteer', :locals=>{:form=>form}
 
-    - if  @registrant.home_state_allows_ovr_ignoring_license?
-      .use_state_registration
-        = rollover_button(:prepare, I18n.t('txt.button.submit'))
-    .skip_state_registration.skip_state_registration--submit-button
-      = rollover_button(:prepare, I18n.t('txt.button.prepare'))
+    .use_state_registration
+      = rollover_button(:prepare, I18n.t('txt.button.submit'))
   - else
     = render(:partial => 'previous', :locals => {:form => form}) unless @registrant.first_registration?
     %ul.flat

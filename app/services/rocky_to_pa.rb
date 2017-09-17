@@ -106,7 +106,8 @@ class RockyToPA
     result['Email'] = email
     result['streetaddress'] = @registrant.home_address
     result['streetaddress2'] = ""
-    result['unittype'], result['unitnumber'] = parse_unit_and_number(@registrant.home_unit)
+    result['unittype'] = @registrant.home_unit_type
+    result['unitnumber'] = @registrant.home_unit
 
     result['municipality'] = @registrant.home_city
     result['city'] = @registrant.home_city
@@ -260,8 +261,8 @@ class RockyToPA
   end
 
   def drivers_license
-    return '' if @registrant.state_id_number.to_s.length <= 4
-    dl = @registrant.state_id_number.to_s.strip
+    return '' if @registrant.state_id_number.to_s.length <= 7
+    dl = @registrant.state_id_number.to_s.strip.gsub(/[^\d]/,'') 
     valid = dl == "" || dl =~ /^\d{8}$/
     raise ParsingError.new("Invalid drivers licence value \"%s\": 8 digits are expected" % dl) unless valid
     dl
@@ -342,52 +343,7 @@ class RockyToPA
     RACE_RULES[@registrant.race_key.to_s.downcase.strip] || ""
   end
 
-  # make sure any lists has longer names first
-  UNITS = {APT: "APARTMENT",
-    BSM: "BASEMENT",
-    BOX: "BOX #",
-    BLD: ["BUILDING", "BLDG"],
-    DEP: ["DEPARTMENT", "DEPT"],
-    FL: ["FLOOR", "FLR"],
-    FRN: ["FRONT", "FRNT"],
-    HNG: "HANGER",
-    LBB: "LOBBY",
-    LOT: "LOT",
-    LOW: "LOWER",
-    OFC: "OFFICE",
-    PH: "PENTHOUSE",
-    PIE: "PIER",
-    POL: "POLL",
-    REA: "REAR",
-    RM: "ROOM",
-    SID: "SIDE",
-    SLI: "SLIP",
-    SPC: "SPACE",
-    STO: "STOP",
-    STE: "SUITE",
-    TRL: ["TRAILER", "TRLR"],
-    UNI: "UNIT",
-    UPP: "UPPER",
-    CBN: "CABIN",
-    HUB: "HUB",
-    SMC: "STUDENT MAILING CENTER",
-    TH: "TOWNHOUSE"
-  }
-
-  def parse_unit_and_number(unit)
-    return ['', ''] if unit.blank?
-    
-    UNITS.each do |k,v|
-      [v, k].flatten.each do |word|
-        w = word.to_s.downcase
-        if unit.downcase.include?(w)
-          return[k.to_s, unit.downcase.gsub(/#{word}/i, '').strip]
-        end
-      end
-    end
-    return ['', unit]
-  end
-
+  
   PARTIES_NAMES = {
       "democratic" => "D",
       "republican" => "R",
@@ -414,7 +370,7 @@ class RockyToPA
   end
 
   def ssn4
-    v = @registrant.state_id_number.to_s.length <= 4 ? @registrant.state_id_number : ""
+    v = @registrant.ssn4.to_s.gsub(/[^\d]/,'') 
     if v.blank?
       ""
     else
@@ -454,18 +410,7 @@ class RockyToPA
   end
 
   def dont_have_both_ids
-    return false ? "0" : "1"
-    # TODO
-    v = no_such_voter_id('ssn4') == '1' &&
-        no_such_voter_id('drivers_license') == '1'
-    if v
-      [ssn4: ssn4, drivers_license: drivers_license].each do |name, id|
-        raise ParsingError.new("Non empty #{name} when attest_no_such_id == true") unless is_empty(id)
-      end
-      "1"
-    else
-      "0"
-    end
+    return @registrant.does_not_have_state_id && @registrant.does_not_have_ssn4? ? "0" : "1"
   end
 
   def assisted_person_name

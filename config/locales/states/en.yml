@@ -2,6 +2,9 @@
 en:
   states:
     custom:
+      pa: 
+        dln_instructions: ! 'If you have a PA driver''s license or PennDOT ID card number, you must use it. Your PennDOT is the 8 digit number found on the top right of a PA driver''s license OR non-driver''s state ID card'
+        submitting: 'Submitting your registration to the PA state system'
       ca:
         online_instructions: ! 'You can complete your voter registration online with
 

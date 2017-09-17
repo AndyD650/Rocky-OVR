@@ -551,6 +551,10 @@ body {
         
       }
       
+      .instructions p {
+        color: #434343;
+        margin: .5em 0;
+      }
       .checkbox-explanation p {
         margin: -5px 75px 20px 110px;
         color: #434343;
@@ -739,4 +743,13 @@ body {
 }
 
 
+@import 'registration2-variables';
+
+$mobile-width: calc(100% - #{$tooltip-offset});
+$mobile-min-width: 300px - $tooltip-offset;
+
+
 @import 'registration2-mobile';
+
+
+@import 'state-customizations';

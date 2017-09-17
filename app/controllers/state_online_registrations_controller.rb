@@ -32,13 +32,32 @@ class StateOnlineRegistrationsController < RegistrationStep
     elsif @registrant.has_home_state_online_registration_view?
       render :action=> @registrant.home_state_online_registration_view      
     elsif @registrant.has_home_state_direct_ovr?
-      @registrant.submit_to_home_state_ovr
-      @registrant.advance_to_step_5
-      @registrant.wrap_up   
-      redirect_to registrant_finish_url(@registrant)   
+      @registrant.async_submit_to_home_state_ovr
+      redirect_to status_registrant_state_online_registration_url(@registrant)   
     else
       render :action => :show
     end
+  end
+  
+  def status
+    find_registrant
+    @attempt = (params[:cno] || 1).to_i
+    @refresh_location = status_registrant_state_online_registration_url(@registrant, :cno=>@attempt+1)
+    
+    if !@registrant.pa_submission_complete
+      render
+    else
+      if @registrant.pa_transaction_id.blank? || @attempt >= 20
+        # finish with PDF
+        @registrant.finish_with_state = false
+        @registrant.save
+        redirect_to registrant_step_5_url(@registrant)
+      else
+        @registrant.cleanup!
+        redirect_to registrant_finish_url(@registrant)
+      end
+    end
+    
   end
 
 protected

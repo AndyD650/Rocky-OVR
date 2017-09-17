@@ -21,7 +21,11 @@ Rocky::Application.routes.draw do
     resource "finish", :only => :show
     resource "ineligible", :only => [:show, :update]
     resources "tell_friends", :only => :create
-    resource "state_online_registration", :only=>:show
+    resource "state_online_registration", :only=>:show do
+      member do
+        get 'status'
+      end
+    end
     member do 
       get "stop_reminders", :to=>'reminders#stop', :as=>'stop_reminders'
     end

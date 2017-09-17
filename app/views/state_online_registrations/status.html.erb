@@ -1,0 +1,11 @@
+<% content_for :head do -%>
+  <meta http-equiv="refresh" content="3; url=<%= @refresh_location %>" />
+<%- end %>
+
+
+<div id="preparing_content">
+  <div class="download" style="position:relative">
+    <p class="preparing"><%= image_tag "reg/spinner.gif" %></p>
+    <p><%= I18n.t('states.custom.pa.submitting') %></p>
+  </div>
+</div>
