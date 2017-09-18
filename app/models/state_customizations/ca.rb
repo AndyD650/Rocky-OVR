@@ -315,10 +315,12 @@ class CA < StateCustomization
     if covr_token
       registrant.covr_token = covr_token
       registrant.covr_success = true
+      return true
     else
       error_code = self.class.extract_error_code_from_xml_response(api_response)
       error_message = self.class.extract_error_message_from_xml_response(api_response)
       log_covr_error("Error #{error_code}: #{error_message.strip}")
+      return false
     end
   end
     

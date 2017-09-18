@@ -925,6 +925,10 @@ class Registrant < ActiveRecord::Base
     is_fake? ? "fake_state_online_page" : "#{home_state.abbreviation.downcase}"
   end
   
+  def custom_finish_page
+    is_fake? ? "fake_state_online_finish_page" : "#{home_state.abbreviation.downcase}"
+  end
+  
   def has_home_state_online_registration_instructions?
     File.exists?(File.join(Rails.root, 'app/views/state_online_registrations/', "_#{home_state_online_registration_instructions_partial}.html.erb"))
   end

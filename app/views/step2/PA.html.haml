@@ -86,6 +86,19 @@
           function hasSsn4() {
             return !$('input[name="registrant[does_not_have_ssn4]"]:checked').length == 1;
           }
+          function hasAssistant() {
+            return $('input[name="registrant[has_assistant]"]:checked').length == 1;            
+          }
+          
+          
+          function toggleAssistant() {
+            if (hasAssistant()) {
+              $('.registrant-form__assistant-fields').show();
+            } else {
+              $('.registrant-form__assistant-fields').hide();              
+            }
+          }
+          
           function toggleDln() {
             if (hasStateLicense()) {
               $('.registrant-form__state-id-number__line').show();
@@ -106,6 +119,7 @@
               }
             }
           }
+          toggleDln();     
           toggleSsn4();
           $('input[name="registrant[does_not_have_state_id]"]').click(function() {
             toggleSsn4();
@@ -114,9 +128,15 @@
           $('input[name="registrant[does_not_have_ssn4]"]').click(function() {
             toggleSsn4();
           });
+          
+          toggleAssistant();
+          $('input[name="registrant[has_assistant]"]').click(function() {
+            toggleAssistant();
+          });
+          
         });
 
-    = render :partial=> "registrants/race_and_party", :locals=>{:form=>form, party_extras: render(partial: "registrants/pa/party", locals: {form: form}), race_extras: render(partial: "registrants/pa/race", locals: {form: form})}
+    = render :partial=> "registrants/pa/race_and_party", :locals=>{:form=>form, party_extras: render(partial: "registrants/pa/party", locals: {form: form}), race_extras: render(partial: "registrants/pa/race", locals: {form: form})}
   
     %ul.flat.dob-and-phone
       = render :partial=> "registrants/date_of_birth", :locals=>{:form=>form}
@@ -128,6 +148,36 @@
     
       = render :partial=>'registrants/survey_and_volunteer', :locals=>{:form=>form}
 
+
+    %fieldset.assistant
+      %ul.checkbox
+        %li.spacer= "&nbsp;"
+        %li.registrant-form__has-assistant__line
+          %h3
+            = form.check_box :has_assistant 
+            = form.label :has_assistant
+            %span.error= form.object.errors[:has_assistant].join("\n")
+      %ul.flat.registrant-form__assistant-fields
+        %li.registrant-form__assistant-person-name__line.width_a
+          %h3
+            = form.label :assisted_person_name
+            %span.required *
+          = field_div form, :assisted_person_name
+          %span.error= form.object.errors[:assisted_person_name].join("\n")          
+        %li.registrant-form__assistant-person-address__line.width_a
+          %h3
+            = form.label :assisted_person_address
+            %span.required *
+          = field_div form, :assisted_person_address
+          %span.error= form.object.errors[:assisted_person_address].join("\n")
+        %li.registrant-form__assistant-person-phone__line.width_a
+          %h3
+            = form.label :assisted_person_phone
+            %span.required *
+          = field_div form, :assisted_person_phone
+          %span.error= form.object.errors[:assisted_person_phone].join("\n")
+        
+
     .use_state_registration
       = rollover_button(:prepare, I18n.t('txt.button.submit'))
   - else
@@ -135,7 +185,7 @@
     %ul.flat
       = render :partial=> "registrants/phone", :locals=>{:form=>form}
     -#%hr
-    
+
     = rollover_button(:next_step, I18n.t('txt.button.submit').html_safe)
   
   .back

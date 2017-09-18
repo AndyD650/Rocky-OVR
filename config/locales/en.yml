@@ -87,6 +87,11 @@ en:
         prev_zip_code: Zip
         opt_in_email: Receive emails
         opt_in_sms: Receive txt messages
+        has_assistant: Did someone help you with this form?
+        assisted_person_name: Helper Full Name 
+        assisted_person_address: Helper Address (include address, city, state and ZIP code)
+        assisted_person_phone: Helper Phone Number
+        
         attest_true: I have reviewed the above information, and it is true and accurate
           to the best of my knowledge.
         tell_from: From

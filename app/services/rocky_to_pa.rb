@@ -74,6 +74,10 @@ class RockyToPA
     @request = registrant.to_api_hash
     raise ParsingError.new('Invalid input, voter_registration value not found') if @request.nil?
   end
+  
+  def valid_for_submission?
+    dont_have_both_ids == "1"
+  end
 
   def convert
     result = {}
@@ -96,7 +100,7 @@ class RockyToPA
     result['isfederalvoter'] = ""
 
     # YYYY-MM-DD is expected
-    result['DateOfBirth'] = VRToPA.format_date(read([:pdf_date_of_birth], REQUIRED), "date_of_birth")
+    result['DateOfBirth'] = VRToPA.format_date(@registrant.date_of_birth.to_s, "date_of_birth")
     result['Gender'] = parse_gender()
     result['Ethnicity'] = parse_race(read([:race]))
 
@@ -158,10 +162,10 @@ class RockyToPA
     result['previousregyear'] = ""
     result['declaration1'] = "1"
     
-    result['assistedpersonname'] = '' #assisted_person_name
-    result['assistedpersonAddress'] = '' #assisted_person_address
-    result['assistedpersonphone'] = '' #assisted_person_phone
-    result['assistancedeclaration2'] = bool_to_int(false) # [assistant_declaration, assistance_declaration2].max
+    result['assistedpersonname'] = @registrant.assisted_person_name
+    result['assistedpersonAddress'] = @registrant.assisted_person_address
+    result['assistedpersonphone'] = @registrant.assisted_person_phone
+    result['assistancedeclaration2'] = bool_to_int(@registrant.has_assistant?)
     validate_assisted_person_data(result)
     result['ispollworker'] = ""
     result['bilingualinterpreter'] = ""
@@ -354,7 +358,7 @@ class RockyToPA
     @party ||= begin
       name = read([:english_party_name], REQUIRED)
       v = PARTIES_NAMES[name.to_s.downcase.strip]
-      v ? {politicalparty: v, otherpoliticalparty: ""} : {politicalparty: "OTH", otherpoliticalparty: name}
+      v ? {politicalparty: v, otherpoliticalparty: ""} : {politicalparty: "OTH", otherpoliticalparty: @registrant.other_party}
     end
   end
 

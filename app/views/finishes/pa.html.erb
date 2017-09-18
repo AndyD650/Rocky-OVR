@@ -1,0 +1,16 @@
+<%- if @registrant.partner && !@registrant.partner.external_conversion_snippet.blank? %>
+  <%= @registrant.partner.external_conversion_snippet.to_s.html_safe %>
+<%- end %>  
+<div class='finish-page'>
+  <h1><%= I18n.t('states.custom.pa.finish_page.header').html_safe %> </h1>
+  <h2><%= I18n.t('states.custom.pa.finish_page.transaction_id', transaction_id: @registrant.pa_transaction_id).html_safe %> </h2>
+  <div class="fulltext">
+    <%= I18n.t('states.custom.pa.finish_page.contents').html_safe %>
+  
+    <%= I18n.t('states.custom.pa.finish_page.deadline').html_safe %>
+  
+  </div>
+</div>
+<%= render "finishes/finish_iframe" %>
+
+<%= render :partial => 'finishes/adwords' %>

@@ -41,8 +41,16 @@ class FinishesController < RegistrationStep
       @pdf_ready = @registrant.pdf_ready?
     end
     set_up_share_variables
+    if @registrant.has_home_state_direct_ovr? && @registrant.submission_succeeded? 
+      render @registrant.custom_finish_page
+    else
+      render
+    end
+    
   end
 
-  
+  def show_direct_ovr
+      
+  end
 
 end

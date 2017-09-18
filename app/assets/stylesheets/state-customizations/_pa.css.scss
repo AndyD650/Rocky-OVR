@@ -1,5 +1,27 @@
 body.PA-state {
   #main {
+    strong {
+      font-weight: bold;
+    }
+    .finish-page {
+      h2 {
+        margin-top: 1em;
+        font-weight: normal;
+      }
+    }
+    .fulltext {
+      p {
+        font-size: 14px;
+      }
+      ul {
+        font-size: 14px;
+        list-style: disc inside;
+        li {
+          margin: 1em 0 1em 20px;
+          line-height: 1.4em;
+        }
+      }
+    }
     form {
       fieldset.id-numbers {
         margin: 2em -10px;
@@ -9,6 +31,10 @@ body.PA-state {
       ul, ul.flat {
         &.dob-and-phone {
           clear: both;
+        }
+        &.other-party {
+          clear: both;
+          padding-top: 1em;
         }
         li {
           &.registrant-form__home-address__line {

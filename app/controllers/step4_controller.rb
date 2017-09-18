@@ -33,7 +33,7 @@ class Step4Controller < RegistrationStep
   def show
     super
     if @registrant.has_ovr_pre_check?
-      @registrant.ovr_pre_check(self)
+      @eligible = @registrant.ovr_pre_check(self)
     end
     if @registrant.skip_survey_and_opt_ins? && !@registrant.in_ovr_flow?
       attempt_to_advance

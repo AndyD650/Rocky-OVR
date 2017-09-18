@@ -33,14 +33,47 @@ class PA < StateCustomization
   def decorate_registrant(registrant=nil, controller=nil)
     unless registrant.respond_to?(:home_county_required)
       registrant.class.class_eval do
-        state_attr_accessor :home_county, :home_unit_type, :prev_county, :change_of_party, :pa_submission_error, :pa_transaction_id, :ssn4, :does_not_have_ssn4, :pa_submission_complete
+        state_attr_accessor :home_county, :home_unit_type, :prev_county, :change_of_party, :other_party, :pa_submission_error, :pa_transaction_id, :ssn4, :does_not_have_ssn4, :pa_submission_complete
         
-        validate :home_county_required, :prev_county_required_in_pa, :validate_pa_formats, :home_unit_type_required_if_home_unit_present, :validate_ids
+        state_attr_accessor :assisted_person_name, :assisted_person_address, :assisted_person_phone, :has_assistant
+        
+        define_method :has_assistant? do
+          self.has_assistant.to_s == "1"
+        end
+        
+        
+        
+        validate :pa_validations, if: :using_pa_state_online_registration?
+        
+        define_method :using_pa_state_online_registration? do
+          self.home_state_abbrev == "PA" && self.using_state_online_registration?
+        end
+        
+        define_method :pa_validations do
+          [:home_county_required, :prev_county_required_in_pa, :validate_pa_formats, :home_unit_type_required_if_home_unit_present, :validate_ids, :validate_other_party, :validate_assistant].each do |vm|
+            self.send(vm)
+          end          
+        end
+        
+        define_method :validate_assistant do
+          if self.has_assistant?
+            errors.add(:assisted_person_name, :blank) if self.assisted_person_name.blank?
+            errors.add(:assisted_person_address, :blank) if self.assisted_person_address.blank?
+            errors.add(:assisted_person_phone, :blank) if self.assisted_person_phone.blank?
+          end
+        end
         
         define_method :does_not_have_ssn4? do
           self.does_not_have_ssn4.to_s == "1"
         end
         
+        define_method :validate_other_party do
+          if self.english_party_name == I18n.t('states.parties.other', locale: 'en')
+            if self.other_party.blank?
+              errors.add(:other_party, :blank)
+            end
+          end
+        end
         
         define_method :validate_ids do
           if self.at_least_step_2? && !self.complete?
@@ -49,6 +82,8 @@ class PA < StateCustomization
             elsif self.does_not_have_state_id
               if self.ssn4.blank? && !self.does_not_have_ssn4?
                 errors.add(:ssn4, :blank)
+              else
+                self.state_id_number = "NONE"
               end
             end
           end
@@ -90,6 +125,15 @@ class PA < StateCustomization
             rescue PhoneFormatter::InvalidPhoneNumber => e
               errors.add(:phone, e.message)
             end
+
+            if self.has_assistant? && !self.assisted_person_phone.blank?
+              begin
+                PhoneFormatter.process(self.assisted_person_phone)
+              rescue PhoneFormatter::InvalidPhoneNumber => e
+                errors.add(:assisted_person_phone, :invalid)
+              end
+            end
+
             
             if self.home_unit.length > 15
               errors.add(:home_unit, "Unit number must be 15 characters or less.")
@@ -130,8 +174,8 @@ class PA < StateCustomization
           self.save
         end
         
-        define_method :pdf_ready? do
-          self.pdf_ready || (self.pa_submission_complete && !self.pa_transaction_id.blank?)
+        define_method :submission_succeeded? do
+          self.pa_submission_complete && !self.pa_transaction_id.blank?
         end
         
         
@@ -188,8 +232,15 @@ class PA < StateCustomization
     
   
   def enabled_for_language?(lang, reg)
-    return true
+    decorate_registrant(reg) if reg
+    return false if reg && !reg.has_state_license? && reg.does_not_have_ssn4?
+    return false if reg && !reg.will_be_18_by_election?
+    return true if ovr_settings.blank?
+    lang_list = ovr_settings["languages"]
+    return true if lang_list.blank? || lang_list.empty?
+    return lang_list.include?(lang)
   end
+  
   
   def ovr_pre_check(registrant, controller)
     errors = []
@@ -202,6 +253,10 @@ class PA < StateCustomization
 
     registrant.errors.add(:base, errors.join("\n")) if errors.any?
     
+    if !pa_adapter.valid_for_submission?
+      return false
+    end
+    return true
   end
   
 end

@@ -1,0 +1,54 @@
+<%- party_extras ||= nil %>
+<%- race_extras ||= nil %>
+
+<ul class="flat race-dropdown">
+  <li class='registrant-form__race__line'>
+    <h3><%= form.label :race %><%- if @registrant.requires_race? %><span class='required'>*</span><%- end %></h3>
+    <%= race_extras %>
+    <%= select_div form, :race, @registrant.races, :include_blank => true %>
+    
+    <div class="tooltip"><%= tooltip_tag :race, @race_tooltip %></div>
+    <span class="error"><%= form.object.errors[:race].join("\n") %></span>
+
+  </li>
+</ul>
+<% if @state_parties && @state_parties.any? %>
+  <ul class="flat party-dropdown">
+    <li class='registrant-form__party__line'>
+      <h3><%= form.label :party %><%- if @registrant.requires_party? %><span class='required'>*</span><%- end %></h3>
+      <%= party_extras %>
+      <%= select_div form, :party, @state_parties, :include_blank => true %>
+      <ul class="flat other-party">
+        <li class="registrant-form__party__line--other">
+          <h3><%= form.label :other_party %><span class='required'>*</span></h3>
+          <%= field_div form, :other_party %>
+          <span class="error"><%= form.object.errors[:other_party].join("\n") %></span>
+        </li>
+      </ul>
+      <div class="tooltip"><%= tooltip_tag :party, @party_tooltip %></div>
+      <span class="error"><%= form.object.errors[:party].join("\n") %></span>
+    </li>
+  </ul>
+  <%- other_party_terms = RockyConf.enabled_locales.collect {|loc| I18n.t('states.parties.other', locale: loc)} %>
+  <script type="text/javascript">
+    $("document").ready(function() {
+      var otherPartyTerms = [<%= other_party_terms.collect {|p| "'#{p}'"}.join(', ').html_safe %>];
+      var otherPartyFieldset = $(".party-dropdown .other-party")
+      function showOtherParty() {
+        var party = $("#registrant_party").val();
+        if (otherPartyTerms.includes(party)) {
+          otherPartyFieldset.show();
+        } else {
+          otherPartyFieldset.hide();
+        }
+      }
+      
+      showOtherParty();
+      $("#registrant_party").change(function() {
+        showOtherParty();
+      })
+      
+    })
+  </script>
+  
+<% end %>

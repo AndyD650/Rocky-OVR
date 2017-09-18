@@ -549,7 +549,7 @@ record_37:
 record_38:
   abbreviation: PA
   name: Pennsylvania
-  requires_race: true
+  requires_race: false
   race_tooltip: requested_no_conditions_with_state_name
   requires_party: true
   party_tooltip: required_for_primary_2

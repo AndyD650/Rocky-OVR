@@ -20,8 +20,8 @@ $(document).ready(function() {
       <span class="error"><%= form.object.errors[:home_address].join("\n") %></span>
     </li>
     <li class="width_b registrant-form__home-unit-type__line">
-      <h3><%= form.label :home_unit_type %><span class='required'>*</span></h3>
-      <div><%= form.select :home_unit_type, options_for_select(PA::UNITS.invert, selected: @registrant.home_unit_type), include_blank: true %></div>
+      <h3><%= form.label :home_unit_type %></h3>
+      <%= select_div form, :home_unit_type, options_for_select(PA::UNITS.invert, selected: @registrant.home_unit_type), include_blank: true %>
       <span class="error"><%= form.object.errors[:home_unit_type].join("\n") %></span>
     </li>
     

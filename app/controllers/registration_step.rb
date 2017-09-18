@@ -93,6 +93,7 @@ class RegistrationStep < ApplicationController
         redirect_to registrant_ineligible_url(@registrant)
       end
     else
+      #raise @registrant.errors.full_messages.inspect
       set_show_skip_state_fields
       render_current_step
     end
