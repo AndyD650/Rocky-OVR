@@ -244,7 +244,7 @@ class RockyToPA
   end
   
   def name_update
-    name_update_boolean ? "0" : "1"
+    name_update_boolean ? "1" : "0"
   end
 
   def zip_code(key, is_required=true)
@@ -414,7 +414,7 @@ class RockyToPA
   end
 
   def dont_have_both_ids
-    return @registrant.does_not_have_state_id && @registrant.does_not_have_ssn4? ? "0" : "1"
+    return @registrant.does_not_have_state_id && @registrant.does_not_have_ssn4? ? "1" : "0"
   end
 
   def assisted_person_name
