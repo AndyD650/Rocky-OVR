@@ -351,14 +351,16 @@ class RockyToPA
   PARTIES_NAMES = {
       "democratic" => "D",
       "republican" => "R",
-      "none" => "NF"
+      "green"      => "GR",
+      "libertarian"=> "LN",
+      "none"       => "NF"
   }
 
   def party
     @party ||= begin
       name = read([:english_party_name], REQUIRED)
       v = PARTIES_NAMES[name.to_s.downcase.strip]
-      v ? {politicalparty: v, otherpoliticalparty: ""} : {politicalparty: "OTH", otherpoliticalparty: @registrant.other_party}
+      v ? {politicalparty: v, otherpoliticalparty: ""} : {politicalparty: "OTH", otherpoliticalparty: @registrant.other_party.blank? ? @registrant.party : @registrant.other_party}
     end
   end
 
