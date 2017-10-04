@@ -62,7 +62,9 @@ ovr_states:
       web_agency_key: RTV
   PA: 
     api_settings:
-      api_url: "https://fake-pa-endpoint.herokuapp.com"      
+      api_url: "https://paovrwebapi.beta.votespa.com/SureOVRWebAPI/api/ovr?JSONv2&sysparm_AuthKey=<%= ENV['PA_API_KEY'] %>&sysparm_action=SETAPPLICATION&sysparm_Language=0"
+      #api_url: "https://fake-pa-endpoint.herokuapp.com"      
+      
     require_id: true
   
   NV:
